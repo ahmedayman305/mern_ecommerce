@@ -1,0 +1,77 @@
+import User from "../models/user.model.js";
+import { generateToken, throwError } from "../utils/utils.js";
+
+export const signIn = async (req, res, next) => {
+    try {
+        const { email, password } = req.body;
+
+        if (!email || !password) {
+            return next(throwError(400, "All fields are required"));
+        }
+
+        const foundUser = await User.findOne({ email });
+
+        if (!foundUser) {
+            return next(throwError(404, "User not found"));
+        }
+
+        const isPasswordMatch = await foundUser.comparePassword(password);
+
+        if (!isPasswordMatch) {
+            return next(throwError(401, "Incorrect password"));
+        }
+
+        generateToken(res, foundUser._id);
+
+        res.status(200).json({
+            message: "User signed in successfully",
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const signUp = async (req, res, next) => {
+    try {
+        const { name, email, password } = req.body;
+
+        if (!name || !email || !password) {
+            return next(throwError(400, "All fields are required"));
+        }
+
+        const userExists = await User.findOne({ email });
+
+        if (userExists) {
+            return next(throwError(409, "User already exists"));
+        }
+
+        const newUser = await User.create({
+            name,
+            email,
+            password,
+        });
+
+        generateToken(res, newUser._id);
+
+        res.status(201).json({
+            newUser,
+            message: "User created successfully",
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const checkAuth = async (req, res, next) => {
+    try {
+        const user = await User.findById(req.userId).select("-password");
+        if (!user) return next(throwError(404, "User not found")); // Use 404 for not found
+
+        res.status(200).json({
+            success: true,
+            user,
+        });
+    } catch (error) {
+        next(error);
+    }
+};
