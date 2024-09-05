@@ -15,6 +15,7 @@ import authRoutes from "./routes/auth.route.js";
 import productsRoutes from "./routes/products.route.js";
 import cartRoutes from "./routes/cart.route.js";
 import couponRoutes from "./routes/coupon.route.js";
+import paymentRoutes from "./routes/payment.route.js";
 
 // init app
 const app = express();
@@ -27,7 +28,8 @@ app.use(cookieParser());
 app.use("/api/auth", authRoutes);
 app.use("/api/products", productsRoutes);
 app.use("/api/cart", cartRoutes);
-app.use("/api/cart", couponRoutes);
+app.use("/api/coupon", couponRoutes);
+app.use("/api/payment", paymentRoutes);
 
 // error middleware
 app.use((err, req, res, next) => {
