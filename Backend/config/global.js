@@ -9,6 +9,7 @@ const ENV = {
     cloudinaryCloudKey: process.env.CLOUDINARY_CLOUD_KEY,
     cloudinaryCloudSecret: process.env.CLOUDINARY_CLOUD_SECRET,
     stripeSecret: process.env.STRIPE_SECRET_KEY,
+    clientUrl: process.env.CLIENT_URL,
 };
 
 export default ENV;

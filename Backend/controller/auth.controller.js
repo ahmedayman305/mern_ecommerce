@@ -64,12 +64,9 @@ export const signUp = async (req, res, next) => {
 
 export const checkAuth = async (req, res, next) => {
     try {
-        const user = await User.findById(req.userId).select("-password");
-        if (!user) return next(throwError(404, "User not found")); // Use 404 for not found
-
         res.status(200).json({
             success: true,
-            user,
+            user: req.user,
         });
     } catch (error) {
         next(error);
