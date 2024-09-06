@@ -1,7 +1,22 @@
+import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import { Home, SignIn, SignUp } from "./pages";
+import { Layout } from "./components";
+import { useState } from "react";
+
 function App() {
+    const [cartCount, setCartCount] = useState(0);
+
+    const Router = createBrowserRouter([
+        {
+            element: <Layout />,
+            children: [{ index: true, element: <Home /> }],
+        },
+        { path: "/sign-in", element: <SignIn /> },
+        { path: "/sign-up", element: <SignUp /> },
+    ]);
     return (
         <>
-            <h1>hello world</h1>
+            <RouterProvider router={Router} />
         </>
     );
 }

@@ -21,10 +21,11 @@ export const signIn = async (req, res, next) => {
             return next(throwError(401, "Incorrect password"));
         }
 
-        generateToken(res, foundUser._id);
+        const token = generateToken(res, foundUser._id);
 
         res.status(200).json({
             message: "User signed in successfully",
+            token,
         });
     } catch (error) {
         next(error);

@@ -1,5 +1,6 @@
 //  init express function
 import express from "express";
+import cors from "cors";
 
 // import global function
 import ENV from "./config/global.js";
@@ -23,7 +24,12 @@ const app = express();
 // use global middlewares
 app.use(express.json());
 app.use(cookieParser());
-
+app.use(
+    cors({
+        origin: ENV.clientUrl,
+        credentials: true,
+    })
+);
 // use routes
 app.use("/api/auth", authRoutes);
 app.use("/api/products", productsRoutes);
