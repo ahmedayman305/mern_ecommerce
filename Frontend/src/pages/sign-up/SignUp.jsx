@@ -1,13 +1,16 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Alert, Spin, message } from "antd";
 import { useSignUp } from "../../hooks/auth";
 import { LoadingOutlined } from "@ant-design/icons";
+import useUserSlice from "../../store/userSlice";
 
 const SignUp = () => {
     const { mutateAsync: signUp, isLoading } = useSignUp();
+    const { setUser } = useUserSlice();
+    const navigate = useNavigate();
 
     const {
         register,
@@ -17,11 +20,11 @@ const SignUp = () => {
         formState: { errors, isSubmitting },
     } = useForm();
 
-
     const formHandler = async (data) => {
         await signUp(data, {
             onSuccess: (response) => {
-                console.log("Sign up successful", response);
+                setUser(response.user);
+                navigate("/");
                 reset();
             },
             onError: (err) => {

@@ -22,3 +22,9 @@ body {
     font-family: "Inter", sans-serif;
     font-optical-sizing: auto;
 }
+
+/* CustomButton.css */
+.custom-button {
+    border-top-right-radius: 10px !important; /* Remove border radius on the top right */
+    border-bottom-right-radius: 0px; /* Optional: Adjust other border radii if needed */
+}

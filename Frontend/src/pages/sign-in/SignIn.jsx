@@ -5,9 +5,12 @@ import { motion } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import { useSignIn } from "../../hooks/auth";
+import useUserSlice from "../../store/userSlice";
 
 const SignIn = () => {
     const { mutateAsync: SignIn, isLoading } = useSignIn();
+    const { setUser } = useUserSlice();
+
     const navigate = useNavigate();
     const {
         register,
@@ -19,7 +22,7 @@ const SignIn = () => {
     const formHandler = async (data) => {
         await SignIn(data, {
             onSuccess: (response) => {
-                console.log(response);
+                setUser(response.user);
                 response?.user?.role === "admin"
                     ? navigate("/admin")
                     : navigate("/");
