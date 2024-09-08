@@ -1,88 +1,133 @@
-import React, { useState } from "react";
-import photo from "../../assets/3.jpg";
+import React from "react";
+import { Spin, message } from "antd";
+import { LoadingOutlined } from "@ant-design/icons";
 import { motion } from "framer-motion";
-import { CustomInput } from "../../components";
+import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
-const SignIn = () => {
-    const [email, setEmail] = useState("");
-    const [password, setpassword] = useState("");
-    const navigate = useNavigate();
+import { useSignIn } from "../../hooks/auth";
 
-    const handleSubmit = async (e) => {
-        e.preventDefault(); // Corrected typo
-        try {
-            const data = {
-                email,
-                password,
-            };
-            const res = await axios.post(
-                "http://localhost:5000/api/auth/sign-in",
-                data
-            );
-            console.log(res);
-            navigate("/"); // Navigate to the homepage or another route after successful login
-        } catch (error) {
-            console.log(error); // Log the error if the request fails
-        }
+const SignIn = () => {
+    const { mutateAsync: SignIn, isLoading } = useSignIn();
+    const navigate = useNavigate();
+    const {
+        register,
+        handleSubmit,
+        reset,
+        formState: { errors, isSubmitting },
+    } = useForm();
+
+    const formHandler = async (data) => {
+        await SignIn(data, {
+            onSuccess: (response) => {
+                console.log(response);
+                response?.user?.role === "admin"
+                    ? navigate("/admin")
+                    : navigate("/");
+            },
+            onError: (err) => {
+                const errorMessage = err.response?.data?.message;
+                setTimeout(() => {
+                    message.error(errorMessage);
+                }, 500);
+            },
+        });
     };
 
-    return (
-        <div className="lg:w-screen lg:h-screen flex justify-center lg:justify-between items-center">
-            <div className="w-1/2 h-full relative lg:block hidden">
-                <img
-                    src={photo}
-                    alt=""
-                    className="w-full h-full object-cover"
+    if (isLoading)
+        return (
+            <div className="min-h-screen flex justify-center items-center bg-gray-100">
+                <Spin
+                    indicator={<LoadingOutlined spin />}
+                    size="large"
+                    className="w-full max-w-sm bg-white p-6 rounded-md shadow-lg mx-2"
                 />
-                <div className="absolute w-full h-full top-0 left-0 bg-black opacity-50 z-10"></div>
             </div>
+        );
 
-            <motion.div
-                className="w-1/2 h-full flex justify-center items-center gap-8 flex-col"
-                initial={{ y: 10 }}
+    return (
+        <div className="min-h-screen flex justify-center items-center bg-gray-100 ">
+            <motion.form
+                onSubmit={handleSubmit(formHandler)}
+                className="w-full max-w-sm bg-white p-6 rounded-md shadow-lg"
+                initial={{ y: 30 }}
                 animate={{ y: 0 }}
                 transition={{ duration: 0.5 }}
             >
-                <h1 className="text-5xl text-slate-800 my-10 playWrite font-extrabold select-none">
-                    Login
-                </h1>
-                <form
-                    onSubmit={handleSubmit}
-                    className="px-12 py-6 shadow rounded-md bg-white lg:w-1/2 w-[400px]"
-                >
-                    <div className="select-none">
-                        <CustomInput
-                            icon={<i class="fa-solid fa-user"></i>}
-                            placeholder="enter your email"
-                            onChange={(e) => setEmail(e.target.value)}
-                            value={email}
-                            type={"email"}
-                        />
-                        <CustomInput
-                            icon={<i class="fa-solid fa-lock"></i>}
-                            placeholder="enter your password"
-                            onChange={(e) => setpassword(e.target.value)}
-                            value={password}
-                            type={"password"}
-                        />
-                        <button
-                            type="submit"
-                            className="bg-slate-800 text-white px-6 py-3 rounded-lg shadow w-full"
-                        >
-                            Login
-                        </button>
-                        <div className="my-5 text-center">
-                            <span>Have account already ? </span>
-                            <Link to={"/sign-up"} className="font-semibold ">
-                                Sign Up
-                            </Link>
-                        </div>
-                    </div>
-                </form>
-            </motion.div>
+                <h2 className="text-2xl font-bold mb-4 text-center">Login</h2>
 
-            <div className="lg:hidden block"></div>
+                {/* Email Input */}
+                <div className="mb-4">
+                    <label
+                        className="block text-sm font-medium mb-2"
+                        htmlFor="email"
+                    >
+                        Email
+                    </label>
+                    <input
+                        id="email"
+                        {...register("email", {
+                            required: "Email is required",
+                            pattern: {
+                                value: /^[^@ ]+@[^@ ]+\.[^@ .]{2,}$/,
+                                message: "Email is not valid",
+                            },
+                        })}
+                        type="email"
+                        placeholder="Enter your email"
+                        className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-slate-800`}
+                    />
+                    {errors.email && (
+                        <p className="text-red-500 text-sm">
+                            {errors.email.message}
+                        </p>
+                    )}
+                </div>
+
+                {/* Password Input */}
+                <div className="mb-4">
+                    <label
+                        className="block text-sm font-medium mb-2"
+                        htmlFor="password"
+                    >
+                        Password
+                    </label>
+                    <input
+                        id="password"
+                        type="password"
+                        placeholder="Enter your password"
+                        {...register("password", {
+                            required: "Password is required",
+                        })}
+                        className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-slate-800`}
+                    />
+                    {errors.password && (
+                        <p className="text-red-500 text-sm">
+                            {errors.password.message}
+                        </p>
+                    )}
+                </div>
+
+                {/* Submit Button */}
+                <button
+                    type="submit"
+                    className="w-full bg-slate-800 text-white py-2 rounded-md hover:bg-slate-500 transition duration-300"
+                    disabled={isSubmitting}
+                >
+                    Login
+                </button>
+
+                <div className="flex justify-start items-center gap-2 mt-5">
+                    <span className="text-slate-800 capitalize text-sm">
+                        you don't have account ?{" "}
+                    </span>
+                    <Link
+                        to={"/sign-up"}
+                        className="text-slate-800 hover:text-slate-500 text-sm font-bold"
+                    >
+                        Sign Up
+                    </Link>
+                </div>
+            </motion.form>
         </div>
     );
 };

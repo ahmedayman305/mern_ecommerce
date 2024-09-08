@@ -1,4 +1,4 @@
-import { Input, ConfigProvider, Divider } from "antd";
+import { Input, ConfigProvider, Divider, Badge } from "antd";
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { BurgerMenu } from "../..";
@@ -12,11 +12,10 @@ const Navbar = () => {
     const toggleSearch = () => {
         setIsSearchVisible(!isSearchVisible);
     };
-
     return (
         <div>
             {/* navbar for lg: device */}
-            <div className="md:block hidden shadow">
+            <div className="md:block hidden shadow ">
                 <div className="w-full px-1 text-center bg-slate-800 text-white">
                     welcome to M10 shop for Sport Clothes
                 </div>
@@ -48,16 +47,29 @@ const Navbar = () => {
                             </ConfigProvider>
                         </div>
                         <div className="flex justify-between itmes-center lg:ml-32 ml-12 lg:gap-10 gap-5">
-                            <Link to={"/sign-in"}>
-                                <button className="px-5 py-2 border-2 border-slate-800 text-slate-800 rounded shadow">
-                                    Login
-                                </button>
-                            </Link>
-                            <Link to={"/sign-up"}>
-                                <button className="px-5 py-2 bg-slate-800 text-white rounded shadow">
-                                    Sign up
-                                </button>
-                            </Link>
+                            {true ? (
+                                <>
+                                    <Badge count={6}>
+                                        <i class="fa-solid fa-cart-shopping text-2xl text-slate-700"></i>
+                                    </Badge>
+                                    <Badge dot={true}>
+                                        <i class="fa-solid fa-heart text-2xl text-slate-700"></i>
+                                    </Badge>
+                                </>
+                            ) : (
+                                <>
+                                    <Link to={"/sign-in"}>
+                                        <button className="px-5 py-2 border-2 border-slate-800 text-slate-800 rounded shadow">
+                                            Login
+                                        </button>
+                                    </Link>
+                                    <Link to={"/sign-up"}>
+                                        <button className="px-5 py-2 bg-slate-800 text-white rounded shadow">
+                                            Sign up
+                                        </button>
+                                    </Link>
+                                </>
+                            )}
                         </div>
                     </header>
 
@@ -124,6 +136,7 @@ const Navbar = () => {
                     </motion.div>
                 </div>
             </motion.div>
+            
         </div>
     );
 };

@@ -1,7 +1,10 @@
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import { Home, SignIn, SignUp } from "./pages";
 import { Layout } from "./components";
-import { useState } from "react";
+
+const adminPage = () => {
+   
+}
 
 function App() {
     const [cartCount, setCartCount] = useState(0);

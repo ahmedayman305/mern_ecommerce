@@ -25,7 +25,7 @@ export const signIn = async (req, res, next) => {
 
         res.status(200).json({
             message: "User signed in successfully",
-            token,
+            user: foundUser,
         });
     } catch (error) {
         next(error);
@@ -43,7 +43,7 @@ export const signUp = async (req, res, next) => {
         const userExists = await User.findOne({ email });
 
         if (userExists) {
-            return next(throwError(409, "User already exists"));
+            return next(throwError(409, "Email already Taken"));
         }
 
         const newUser = await User.create({
